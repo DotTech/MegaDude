@@ -197,12 +197,20 @@
 				RelativePath=".\Sprite.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\SpriteAnimation.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\Definitions.h"
+				>
+			</File>
 			<File
 				RelativePath=".\SDL_Console\DT_drawtext.h"
 				>
@@ -227,6 +235,10 @@
 				RelativePath=".\Sprite.h"
 				>
 			</File>
+			<File
+				RelativePath=".\SpriteAnimation.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -234,6 +246,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

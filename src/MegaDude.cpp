@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
     return game.Execute();
 }
 
-
 // Class constructor
 MegaDude::MegaDude(void)
 {
@@ -27,7 +26,6 @@ MegaDude::MegaDude(void)
 	_spriteSurface = NULL;
 	_running = true;
 }
-
 
 // Executes the game
 int MegaDude::Execute()
@@ -44,10 +42,11 @@ int MegaDude::Execute()
 	while (_running)
 	{
 		// Poll SDL for events and handle them
-		while (SDL_PollEvent(&sdlEvent))
-		{
+		//while (SDL_PollEvent(&sdlEvent))
+		//{
+			SDL_PollEvent(&sdlEvent);
 			HandleEvents(&sdlEvent);
-		}
+		//}
 
 		// Do all game calculations
 		Calculate();
@@ -61,7 +60,6 @@ int MegaDude::Execute()
 
 	return 0;
 }
-
 
 // Handles all the loading of data, whether it be textures, 
 // maps, NPCs, or whatever.
@@ -88,15 +86,22 @@ bool MegaDude::Init()
 	
 
 	// Initialize game sprite data
-	Sprite::InitSprites();
+	Sprite::Init();
 	
 	// Load spritesheet to surface
+	// TODO: Move to sprite::init()
 	loadingSurface = SDL_LoadBMP(DATAFILE_SPRITESHEET);
 	_spriteSurface = SDL_DisplayFormat(loadingSurface);
 	
 	// Setup transparancy on sprite surface
 	SDL_SetColorKey(_spriteSurface, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(_spriteSurface->format, SPRITES_TRANSPARANCY_R, SPRITES_TRANSPARANCY_G, SPRITES_TRANSPARANCY_B));
 	
+	
+	// Create player entity
+	_player = Sprite::SpriteList[SPRITES_MEGAMAN];
+	_player->SetSequence(SPRITES_MEGAMAN_IDLE);
+
+
 	// Free up temporary surface
 	SDL_FreeSurface(loadingSurface);
 
@@ -106,7 +111,6 @@ bool MegaDude::Init()
 	return true;
 }
 
-
 // Handles all input events from the mouse, keyboard, 
 // joysticks, or other devices.
 void MegaDude::HandleEvents(SDL_Event* sdlEvent)
@@ -114,22 +118,13 @@ void MegaDude::HandleEvents(SDL_Event* sdlEvent)
 	SdlEvents::OnEvent(sdlEvent);
 }
 
-
 // Handles all the data updates, such as a NPCs moving across the screen, 
 // decreasing your health bar, or whatever
 void MegaDude::Calculate()
 {
-	if (_lastTick == 0 ||  SDL_GetTicks() - _lastTick >= 75)
-	{
-		if (Sprite::SpriteList[0]->CurrentFrame < 9)
-			Sprite::SpriteList[0]->CurrentFrame++;
-		else
-			Sprite::SpriteList[0]->CurrentFrame = 0;
-		
-		_lastTick = SDL_GetTicks();
-	}
+	// Move player
+	_player->DoAnimation();
 }
-
 
 // Handles all the rendering of anything that shows up on the screen. 
 // It does NOT handle data manipulation, 
@@ -141,7 +136,11 @@ void MegaDude::Render()
 	rectDest.y = 0;
 
 	SDL_BlitSurface(_bgSurface, NULL, _displaySurface, &rectDest);
+	
+	// Draw the megaman sprite
+	SDL_BlitSurface(_spriteSurface, &_player->GetCurrentFrame(), _displaySurface, &_player->DestRect());
 
+	// Render console
 	SDL_Rect border;
 	border.x = 723;
 	border.y = 467;
@@ -149,20 +148,17 @@ void MegaDude::Render()
 	border.h = 300;
 
 	SDL_FillRect(_bgSurface, &border, 0);
-	
-	
-
-	Sprite* testSprite = Sprite::SpriteList[0];
-	
-	SDL_BlitSurface(_spriteSurface, testSprite->Frames[testSprite->CurrentFrame], _displaySurface, &testSprite->DestRect());
-
-	// Render console
 	CON_DrawConsole(Console);
-	DT_DrawText("Debug console", _displaySurface, 0, 740, 480);
 
+	char spriteX[10];
+	sprintf_s(spriteX, "%d", _player->X);
+
+	DT_DrawText("Debug console", _displaySurface, 0, 740, 480);
+	DT_DrawText(spriteX, _displaySurface, 0, 740, 500);
+
+	// Flip the display surface
 	SDL_Flip(_displaySurface);
 }
-
 
 // Cleans up any resources loaded, and insures a peaceful quitting of the game.
 void MegaDude::Cleanup()
@@ -173,20 +169,49 @@ void MegaDude::Cleanup()
 }
 
 
-
 /********************************************************************************
- * GameEvents virtual method implementations									*
+ * GameEvents methods implementations											*
  *******************************************************************************/
 
+// A key is being pressed
 void MegaDude::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode) 
 {
+	// Player movement
+	if (_player->LastMovementTick == 0 ||  SDL_GetTicks() - _player->LastMovementTick >= (unsigned int)_player->MovementRate)
+	{
+		if (sym == SDLK_RIGHT)
+		{
+			_player->SetSequence(SPRITES_MEGAMAN_WALK);
+			_player->Flipped = false;
+			_player->X++;
+		}
+
+		if (sym == SDLK_LEFT)
+		{
+			_player->SetSequence(SPRITES_MEGAMAN_WALK);
+			_player->Flipped = true;
+			_player->X--;
+		}
+
+		_player->LastMovementTick = SDL_GetTicks();
+	}
+
 	if (sym == SDLK_ESCAPE)
 	{
 		OnExit();
 	}
 }
 
+// A key was released
+void MegaDude::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
+{
+	if (_player->CurrentSequence != SPRITES_MEGAMAN_IDLE)
+	{
+		_player->SetSequence(SPRITES_MEGAMAN_IDLE);	
+	}
+}
 
+// Escape pressed or window closed
 void MegaDude::OnExit()
 {
 	_running = false;

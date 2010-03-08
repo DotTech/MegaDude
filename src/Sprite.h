@@ -1,41 +1,28 @@
 #pragma once
-#ifndef _SPRITES_H_
-#define _SPRITES_H_
+#ifndef _SPRITE_H_
+#define _SPRITE_H_
 
 #include <vector>
 #include <SDL.h>
+#include "SpriteAnimation.h"
+#include "Definitions.h"
 
-#define SPRITES_FRAMERATE		100	// Default animation framerate
-#define SPRITES_TRANSPARANCY_R	255	// Transparancy color R value
-#define SPRITES_TRANSPARANCY_G	0	// Transparancy color G value
-#define SPRITES_TRANSPARANCY_B	233	// Transparancy color B value
-#define SPRITES_MEGAMAN_IDLE	1	// Megaman idle sprite
-#define SPRITES_MEGAMAN_WALK	2	// Megaman walking sprite
-#define SPRITES_MEGAMAN_JUMP	3	// Megaman jumping sprite
-
-class Sprite
+class Sprite : public SpriteAnimation
 {
 public:
-	static std::vector<Sprite*> SpriteList;	// List with all the loaded game sprites
-	
-	std::vector<SDL_Rect*> Frames;	// Animation frames
-	int CurrentFrame;	// Active animation frame
-	int FrameRate;		// Ticks per frame
-	bool Flipped;		// If true the sprite is vertically flipped
-	int Width;			// Sprite width
-	int Height;			// Sprite height
-	int X;				// X location
-	int Y;				// Y location
-
-
-private:
-	int FrameOffsetX();					// Frames dont always have the same width. This offset is the amount of pixels needed to put the frame in the center of the sprite.
+	static std::vector<Sprite*> SpriteList;	// List with all the loaded sprites
+	int MovementRate;			// Ticks elapsed per movement
+	Uint32 LastMovementTick;	// Ticks value at last movement
+	int Width;					// Sprite width
+	int Height;					// Sprite height
+	int X;						// X location
+	int Y;						// Y location
 
 public:
 	Sprite();
-	static void InitSprites();			// Initialize sprite data
+	static void Init();					// Initialize sprite data
 	SDL_Rect DestRect();				// Destination rectangle, this already includes the necessary FrameOffsetX
-
+	void SetSequence(int animation);	// Set another sprite animation sequence (eg SPRITES_MEGAMAN_WALK or SPRITES_MEGAMAN_JUMP)
 };
 
 #endif
