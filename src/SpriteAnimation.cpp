@@ -1,6 +1,13 @@
-#include "SpriteAnimation.h"
+//  MODULE NAME: SpriteAnimation.cpp
+//      PROJECT: SDL-based 2D Platform Game
+//       AUTHOR: Ruud van Falier
+//               ruud.vanfalier@gmail.com
+//         DATE: March 9, 2010
+//  DESCRIPTION: Base class for sprite animation. 
+//               Sprite class must inherit from this class.
 
-//std::vector<SpriteAnimation*> SpriteAnimation::SpriteAnimationList;
+#include <fstream>
+#include "SpriteAnimation.h"
 
 // Constructor
 SpriteAnimation::SpriteAnimation(void)
@@ -67,161 +74,106 @@ void SpriteAnimation::DoAnimation()
 	}
 }
 
+// Read a key value from an animation definition line
+int SpriteAnimation::ReadLineValue(string line, string key)
+{
+	key += ":";
+
+	// Find the key trailed by colon sign
+	int startPos = line.find(key);
+	if (startPos != string.npos)
+	{
+		startPos += key.length();
+		line = line.substr(startPos, line.length() - startPos);
+
+		// Find semicolon
+		int scolonPos = line.find_first_of(";");
+
+		// Return the found value
+		return atoi(line.substr(0, scolonPos).c_str());
+	}
+
+	return -1;
+}
+
 // Load the spritesheets and initializes the sprite animations
 void SpriteAnimation::InitAnimations()
 {
-	// IDLE SEQUENCE
-	SpriteAnimation* spriteAnimation = new SpriteAnimation;
-	spriteAnimation->CurrentFrame = 0;
-	spriteAnimation->FrameRate = 150;
+	// We load the animation definitions from a text file.
+	// Animations are defined like this:
+	//
+	// F:<frame_rate>						-- General properties
+	// X:<x>;Y:<y>;W:<width>;H:<height>		-- Frame 1
+	// X:<x>;Y:<y>;W:<width>;H:<height>		-- Frame 2
+	// E:1;									-- End sequence
 
-	// Repeat first frame 10 times
-	for (int i=0; i<10; i++)
-	{
-		SDL_Rect* frame = new SDL_Rect;
-		frame->x = 323;
-		frame->y = 17;
-		frame->w = 30;
-		frame->h = 34;
-		spriteAnimation->Frames.push_back(frame);
-	}
-
-	SDL_Rect* frame = new SDL_Rect;
-	frame->x = 357;
-	frame->y = 17;
-	frame->w = 30;
-	frame->h = 34;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 391;
-	frame->y = 17;
-	frame->w = 30;
-	frame->h = 34;
-	spriteAnimation->Frames.push_back(frame);
-
-	// Load flipped frames
-	spriteAnimation->TotalFrames = spriteAnimation->Frames.size();
-
-	for (int i=0; i<spriteAnimation->TotalFrames; i++)
-	{
-		SDL_Rect* currentFrame = spriteAnimation->Frames[i];
-		
-		frame = new SDL_Rect;
-		frame->x = SPRITES_SHEET_WIDTH - currentFrame->x - currentFrame->w;
-		frame->y = currentFrame->y;
-		frame->w = currentFrame->w;
-		frame->h = currentFrame->h;
-		spriteAnimation->Frames.push_back(frame);
-	}
-
-	SpriteAnimationList.push_back(spriteAnimation);
-
-
-
-	// WALKING SEQUENCE
-
-	// Open file with sprite definitions
-	// 1::0=323,17:30,34;1=357,17:30,34;2=391,17:30,34
-	spriteAnimation = new SpriteAnimation;
-	spriteAnimation->CurrentFrame = 0;
+	// Load animation definition file into string vector
+	vector<string> definition;
+	ifstream file(DATAFILE_ANIMATIONSDEF);
 	
-	// Sprite definitions file only contains the frame locations for the sprite facing in one direction (flipped=false)
-	// The flipped=true frame locations can be calculated using the previously loaded frames.
-	// Formula for a flipped version of a frame X location is SPRITES_SHEET_WIDTH - FRAME_X - FRAME_WIDTH
-	frame = new SDL_Rect;
-	frame->x = 106;
-	frame->y = 106;
-	frame->w = 30;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 137;
-	frame->y = 106;
-	frame->w = 20;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 158;
-	frame->y = 106;
-	frame->w = 23;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 181;
-	frame->y = 106;
-	frame->w = 32;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 213;
-	frame->y = 106;
-	frame->w = 34;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 247;
-	frame->y = 106;
-	frame->w = 26;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 276;
-	frame->y = 106;
-	frame->w = 22;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 298;
-	frame->y = 106;
-	frame->w = 25;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 326;
-	frame->y = 106;
-	frame->w = 30;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 357;
-	frame->y = 106;
-	frame->w = 34;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	frame = new SDL_Rect;
-	frame->x = 391;
-	frame->y = 106;
-	frame->w = 29;
-	frame->h = 35;
-	spriteAnimation->Frames.push_back(frame);
-
-	
-	// Load flipped frames
-	spriteAnimation->TotalFrames = spriteAnimation->Frames.size();
-
-	for (int i=0; i<spriteAnimation->TotalFrames; i++)
+	string line;
+	while (getline(file, line))
 	{
-		SDL_Rect* currentFrame = spriteAnimation->Frames[i];
-		
-		frame = new SDL_Rect;
-		frame->x = SPRITES_SHEET_WIDTH - currentFrame->x - currentFrame->w;
-		frame->y = currentFrame->y;
-		frame->w = currentFrame->w;
-		frame->h = currentFrame->h;
-		spriteAnimation->Frames.push_back(frame);
+		definition.push_back(line);
 	}
 
-	spriteAnimation->FrameRate = 75;
-	SpriteAnimationList.push_back(spriteAnimation);
+	// Loop through all file lines and create the animation objects
+	SpriteAnimation* spriteAnimation;
+	
+	for (int i=0; i<(int)definition.size(); i++)
+	{
+		line = definition[i];
+
+		// Skip comments and empty lines
+		if (line.length() > 0 && line.substr(0, 2) != "//")
+		{
+			// If the F (framerate) key is found this is not a frame definition,
+			// but the definition of a whole new animation sequence.
+			// So we create a new animation object
+			int frameRate = ReadLineValue(line, "F");
+			int endSequence = ReadLineValue(line, "E");
+
+			if (frameRate != -1)
+			{
+				// Start a new animation sequence
+				spriteAnimation = new SpriteAnimation;
+				spriteAnimation->FrameRate = frameRate;
+			}
+			else if (endSequence != -1)
+			{
+				// End current animation sequence.
+				// But not before we added flipped versions of all frames.
+				spriteAnimation->TotalFrames = spriteAnimation->Frames.size();
+
+				for (int i=0; i<spriteAnimation->TotalFrames; i++)
+				{
+					SDL_Rect* currentFrame = spriteAnimation->Frames[i];
+					SDL_Rect* flippedFrame = new SDL_Rect;
+
+					// Locate the flipped version on the sheet
+					flippedFrame->x = SPRITES_SHEET_WIDTH - currentFrame->x - currentFrame->w;
+					flippedFrame->y = currentFrame->y;
+					flippedFrame->w = currentFrame->w;
+					flippedFrame->h = currentFrame->h;
+
+					spriteAnimation->Frames.push_back(flippedFrame);
+				}
+				
+				// Add the finished animation object to the list
+				SpriteAnimationList.push_back(spriteAnimation);
+			}
+			else
+			{
+				// Add new animation frame to current sequence
+				SDL_Rect* frame = new SDL_Rect;
+
+				frame->w = ReadLineValue(line, "W");
+				frame->h = ReadLineValue(line, "H");
+				frame->x = ReadLineValue(line, "X");
+				frame->y = ReadLineValue(line, "Y");
+
+				spriteAnimation->Frames.push_back(frame);
+			}
+		}
+	}
 }

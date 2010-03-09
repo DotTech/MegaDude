@@ -1,0 +1,52 @@
+// <animation_index>=*;F:<frame_rate>
+// <animation_index>=<frame>;X:<x>;Y:<y>;W:<width>;H:<height>
+
+// Megaman idle sequence (0)
+F:150;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:323;Y:17;W:30;H:34;
+X:357;Y:17;W:30;H:34;
+X:391;Y:17;W:30;H:34;
+E:1; // End of this sequence
+
+// Megaman walking sequence (1)
+F:50;
+X:106;Y:106;W:30;H:35;
+X:137;Y:106;W:20;H:35;
+X:158;Y:106;W:23;H:35;
+X:181;Y:106;W:32;H:35;
+X:213;Y:106;W:34;H:35;
+X:247;Y:106;W:26;H:35;
+X:276;Y:106;W:22;H:35;
+X:298;Y:106;W:25;H:35;
+X:326;Y:106;W:30;H:35;
+X:357;Y:106;W:34;H:35;
+X:391;Y:106;W:29;H:35;
+E:1; // End of this sequence
+
+// Megaman jump, going up (2)
+F:50;
+X:202;Y:54;W:24;H:46;
+X:231;Y:54;W:15;H:46;
+X:252;Y:54;W:19;H:46;
+E:1;
+
+// Megaman jump, hang-time (3)
+F:50;
+X:274;Y:54;W:23;H:46;
+E:1;
+
+// Megaman jump, touch down (4)
+F:50;
+X:299;Y:54;W:27;H:46;
+X:331;Y:54;W:24;H:46;
+X:356;Y:54;W:30;H:46;
+E:1;
