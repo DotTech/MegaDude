@@ -25,14 +25,14 @@
  *  Code Cleanup and heavily extended by: Clemens Wacha <reflex-2000@gmx.net>
  */
 
-#include "include\sdlconsole\SDL_console.h"
+#include "sdl_console\SDL_console.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "include\sdlconsole\DT_drawtext.h"
-#include "include\sdlconsole\internal.h"
+#include "sdl_console\DT_drawtext.h"
+#include "sdl_console\internal.h"
 
 #ifdef HAVE_SDLIMAGE
 #include "SDL_image.h"

@@ -6,7 +6,8 @@
 #include "SDL_Console\DT_Drawtext.h"
 #include "SDL_Console\SDL_Console.h"
 #include "SdlEvents.h"
-#include "Sprite.h"
+#include "Entity.h"
+#include "Player.h"
 #include "Definitions.h"
 
 class MegaDude : public SdlEvents
@@ -17,7 +18,7 @@ private:
 	Surfaces _surfaces;
 	GameState _gameState;
 	GameKeysState _gameKeysState;
-	Sprite* _player;
+	Player* _player;
 
 public:
 	MegaDude();

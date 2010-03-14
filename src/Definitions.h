@@ -11,17 +11,19 @@
 
 #include <SDL.h>
 
-#define SPRITES_SHEET_WIDTH		1076	// Width of spritesheet
-#define SPRITES_SHEET_HEIGHT	930		// Height of spritesheet
-#define SPRITES_FRAMERATE		75		// Default animation speed
-#define SPRITES_MOVEMENTRATE	5		// Default sprite movement speed
-#define SPRITES_TRANSPARANCY_R	255		// Transparancy color R value
-#define SPRITES_TRANSPARANCY_G	0		// Transparancy color G value
-#define SPRITES_TRANSPARANCY_B	233		// Transparancy color B value
-#define SPRITES_MEGAMAN			0		// Megaman Sprite
-#define SPRITES_MEGAMAN_IDLE	0		// Megaman idle sequence
-#define SPRITES_MEGAMAN_WALK	1		// Megaman walking sequence
-#define SPRITES_MEGAMAN_JUMP	2		// Megaman jumping sequence
+#define SPRITES_SHEET_WIDTH				1076	// Width of spritesheet
+#define SPRITES_SHEET_HEIGHT			930		// Height of spritesheet
+#define SPRITES_FRAMERATE				75		// Default animation speed
+#define SPRITES_MOVEMENTRATE			5		// Default sprite movement speed
+#define SPRITES_TRANSPARANCY_R			255		// Transparancy color R value
+#define SPRITES_TRANSPARANCY_G			0		// Transparancy color G value
+#define SPRITES_TRANSPARANCY_B			233		// Transparancy color B value
+#define SPRITES_MEGAMAN					0		// Megaman Sprite
+#define SPRITES_MEGAMAN_IDLE			0		// Megaman idle sequence
+#define SPRITES_MEGAMAN_WALK			1		// Megaman walking sequence
+#define SPRITES_MEGAMAN_JUMP_UP			2		// Megaman jumping going up
+#define SPRITES_MEGAMAN_JUMP_HANG		3		// Megaman jumping hanging/falling
+#define SPRITES_MEGAMAN_JUMP_TOUCHDOWN	4		// Megaman jumping touching down
 
 #define DATAFILE_TITLESCREEN "d:\\Data\\MegaDude\\src\\data\\titlescreen.bmp"
 #define DATAFILE_SPRITESHEET "d:\\Data\\MegaDude\\src\\data\\sprites.bmp"
@@ -54,4 +56,12 @@ typedef struct Surfaces
 	SDL_Surface* Tiles;
 	SDL_Surface* TitleScreen;
 } Surfaces;
+
+// Structure for the MegaDude entity (player entity)
+/*typedef struct MegaDudeObject
+{
+	Sprite* Sprite;
+	int State;
+} MegaDudeObject;*/
+
 #endif

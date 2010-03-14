@@ -1,4 +1,4 @@
-#include "Include\SdlEvents.h"
+#include "SdlEvents.h"
 
 SdlEvents::SdlEvents(void)
 {

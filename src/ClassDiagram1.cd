@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Entity">
+    <Position X="0.5" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EAAACAAABAAAAAAAgAAAAEAAAAAAAAAAAAACgAAhcAA=</HashCode>
+      <FileName>Entity.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MegaDude" Collapsed="true">
+    <Position X="5.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABCAAAQAgQEACAAAACIQAAQAABACAEBAEAA=</HashCode>
+      <FileName>MegaDude.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Player" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAIAAAAAAAgAACAAAAAAAAAAAAAAAAAAAQAAIAA=</HashCode>
+      <FileName>Player.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SdlEvents" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EEgAgIAAAACAAACIQFIAAABCABoQAABEAAAEAAAQAAA=</HashCode>
+      <FileName>SdlEvents.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SpriteAnimation">
+    <Position X="3" Y="1" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AMCAAAAIAAAUiBAAAAAAAAAISIAAAAgAACAAAAgAAAE=</HashCode>
+      <FileName>SpriteAnimation.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="GameKeysState" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAEAAACA=</HashCode>
+      <FileName>Definitions.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Surfaces" Collapsed="true">
+    <Position X="9.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAAAQAAAAAAAAIAAIAAAAAAAAA=</HashCode>
+      <FileName>Definitions.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="BitFont_td" Collapsed="true">
+    <Position X="5.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAABAAAAAAAAAAACAAAAAAEAAAgAQAAAAA=</HashCode>
+      <FileName>SDL_Console\DT_drawtext.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="console_information_td" Collapsed="true">
+    <Position X="1.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AY0AIQAAABxAATBgAAQABCkAAAAAACCMAEBgAECAgAA=</HashCode>
+      <FileName>SDL_Console\SDL_console.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="BitFont" Collapsed="true">
+    <Position X="5.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SDL_Console\DT_drawtext.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="ConsoleInformation" Collapsed="true">
+    <Position X="3.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>SDL_Console\SDL_console.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="GameState" Collapsed="true">
+    <Position X="9.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAgAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Definitions.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="__unnamed_0037_1" Collapsed="true">
+    <Position X="8" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAABAAAAAAAAAAAAAAQAAAAAAAAAAAgAA=</HashCode>
+      <FileName>SDL_Console\SDL_console.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

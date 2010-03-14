@@ -87,20 +87,31 @@ bool MegaDude::Init()
 	// Load titlescreen surface
 	SDL_Surface* loadingSurface = SDL_LoadBMP(DATAFILE_TITLESCREEN);
 	_surfaces.TitleScreen = SDL_DisplayFormat(loadingSurface);
+
+	// Replace titlescreen with white rectangle
+	SDL_Rect rect;
+	rect.x = 0; rect.y = 0;
+	rect.w = 1024; rect.h = 768;
+	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xFF, 0xFF, 0xFF));
 	
 	// Load spritesheet to surface and setup transparancy
 	loadingSurface = SDL_LoadBMP(DATAFILE_SPRITESHEET);
 	_surfaces.Sprites = SDL_DisplayFormat(loadingSurface);
 	SDL_SetColorKey(_surfaces.Sprites, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(_surfaces.Sprites->format, SPRITES_TRANSPARANCY_R, SPRITES_TRANSPARANCY_G, SPRITES_TRANSPARANCY_B));
 
+
+	SpriteAnimation::InitAnimations();
+
 	// Initialize sprite data
 	// This loads the definition of animation frames and their location on the spritesheet
-	Sprite::Init();
+	Entity::Init();
 	
 	// Create player entity
 	// TODO: Move entity creation to other class
-	_player = Sprite::SpriteList[SPRITES_MEGAMAN];
-	_player->SetSequence(SPRITES_MEGAMAN_IDLE);
+	_player = new Player();
+	_player->Entity = Entity::EntityList[SPRITES_MEGAMAN];
+	_player->Entity->SetAnimation(SPRITES_MEGAMAN_IDLE, true);
+	_player->Entity->Y = 300;
 
 	// Free up temporary surface
 	SDL_FreeSurface(loadingSurface);
@@ -114,33 +125,25 @@ bool MegaDude::Init()
 // Act on pressed or released gamekeys
 void MegaDude::HandleGameKeys()
 {
-	if (_player->LastMovementTick == 0 ||  SDL_GetTicks() - _player->LastMovementTick >= (unsigned int)_player->MovementRate)
+	// Walking keys handling
+	if (_gameKeysState.RightKeyDown || _gameKeysState.LeftKeyDown)
 	{
-		// Walk left or right
-		if (_gameKeysState.RightKeyDown)
-		{
-			_player->SetSequence(SPRITES_MEGAMAN_WALK);
-			_player->Flipped = false;
-			_player->X++;
-		}
-		else if (_gameKeysState.LeftKeyDown)
-		{
-			_player->SetSequence(SPRITES_MEGAMAN_WALK);
-			_player->Flipped = true;
-			_player->X--;
-		}
-		
-		// Remember when we moved
-		_player->LastMovementTick = SDL_GetTicks();
+		_player->Walking = true;
+		_player->SetDirection(_gameKeysState.LeftKeyDown);
+	}
+	else
+	{
+		_player->Walking = false;
 	}
 	
-	// If no gamekey is active, show megaman in idle state
-	if (!_gameKeysState.LeftKeyDown && !_gameKeysState.RightKeyDown)
+	// Jump key handling
+	if (_gameKeysState.JumpKeyDown)
 	{
-		if (_player->CurrentSequence != SPRITES_MEGAMAN_IDLE)
-		{
-			_player->SetSequence(SPRITES_MEGAMAN_IDLE);	
-		}
+		_player->Jumping = true;
+	}
+	else 
+	{ 
+		_player->Jumping = false; 
 	}
 }
 
@@ -148,8 +151,48 @@ void MegaDude::HandleGameKeys()
 // decreasing your health bar, or whatever
 void MegaDude::Calculate()
 {
-	// Move player
-	_player->DoAnimation();
+	// Handles player animation sequence
+	_player->Entity->Animation->DoAnimation();
+
+	// Handle player movement
+	if (_player->Entity->LastMovementTick == 0 ||  SDL_GetTicks() - _player->Entity->LastMovementTick >= (unsigned int)_player->Entity->MovementRate)
+	{
+		// Player is walking.
+		// Move into the right direction and set the correct animation sequence.
+		if (_player->Walking)
+		{
+			// If we are not jumping and walking animation has not been set yet, set the walking animation
+			if (!_player->Jumping && _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_WALK)
+				_player->Entity->SetAnimation(SPRITES_MEGAMAN_WALK, true);
+
+			if (_player->GetDirection())
+				_player->Entity->X--;
+			else
+				_player->Entity->X++;
+		}
+		
+		// Player is jumping
+		if (_player->Jumping)
+		{
+			// If we just entered the jumping state, we need to reset the currentframe to 0
+			if (_player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_UP 
+				&& _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_HANG 
+				&& _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_TOUCHDOWN)
+			{
+				_player->Entity->SetAnimation(SPRITES_MEGAMAN_JUMP_UP, true);
+			}
+		}
+
+		// Player is idle, let it blink with its eyes
+		if (!_player->Walking && !_player->Jumping)
+		{
+			if (_player->Entity->CurrentAnimation != SPRITES_MEGAMAN_IDLE)
+				_player->Entity->SetAnimation(SPRITES_MEGAMAN_IDLE, true);	
+		}
+
+		// Remember when we moved
+		_player->Entity->LastMovementTick = SDL_GetTicks();
+	}
 }
 
 // Handles all the rendering of anything that shows up on the screen. 
@@ -164,7 +207,7 @@ void MegaDude::Render()
 	SDL_BlitSurface(_surfaces.TitleScreen, NULL, _surfaces.Display, &rectDest);
 	
 	// Draw the player sprite
-	SDL_BlitSurface(_surfaces.Sprites, &_player->GetCurrentFrame(), _surfaces.Display, &_player->DestRect());
+	SDL_BlitSurface(_surfaces.Sprites, &_player->Entity->Animation->GetCurrentFrame(), _surfaces.Display, &_player->Entity->FrameDestRect());
 
 	// Render console
 	SDL_Rect border;
@@ -174,11 +217,18 @@ void MegaDude::Render()
 	SDL_FillRect(_surfaces.Display, &border, 0);
 	CON_DrawConsole(_console);
 
-	char spriteX[10];
-	sprintf_s(spriteX, "%d", _player->X);
+	char spriteX[80];
+	sprintf_s(spriteX, "x:%d fr:%d cf:%d", _player->Entity->X, _player->Entity->Animation->FrameRate, _player->Entity->Animation->CurrentFrame);
 
 	DT_DrawText("Debug console", _surfaces.Display, 0, 740, 480);
 	DT_DrawText(spriteX, _surfaces.Display, 0, 740, 500);
+
+	// Debug: display key strokes
+	if (_gameKeysState.LeftKeyDown) DT_DrawText("LEFT", _surfaces.Display, 0, 740, 520);
+	if (_gameKeysState.RightKeyDown) DT_DrawText("RIGHT", _surfaces.Display, 0, 780, 520);
+	if (_player->Walking) DT_DrawText("walking", _surfaces.Display, 0, 740, 540);
+	if (_gameKeysState.JumpKeyDown) DT_DrawText("JUMP", _surfaces.Display, 0, 820, 520);
+	if (_player->Jumping) DT_DrawText("jumping", _surfaces.Display, 0, 820, 540);
 
 	// Flip the display surface
 	SDL_Flip(_surfaces.Display);
@@ -217,7 +267,12 @@ void MegaDude::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 		_gameKeysState.LeftKeyDown = false;
 		_gameKeysState.RightKeyDown = true;
 	}
-		
+	
+	if (sym == SDLK_LCTRL)
+	{
+		_gameKeysState.JumpKeyDown = true;
+	}
+
 	if (sym == SDLK_ESCAPE)
 	{
 		OnExit();
@@ -229,6 +284,7 @@ void MegaDude::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
 {
 	if (sym == SDLK_LEFT) _gameKeysState.LeftKeyDown = false;
 	if (sym == SDLK_RIGHT) _gameKeysState.RightKeyDown = false;
+	if (sym == SDLK_LCTRL) _gameKeysState.JumpKeyDown = false;
 }
 
 // Escape pressed or window closed

@@ -178,6 +178,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Entity.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\internal.c"
 				>
 			</File>
@@ -186,15 +190,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Player.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\SDL_console.c"
 				>
 			</File>
 			<File
 				RelativePath=".\SdlEvents.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Sprite.cpp"
 				>
 			</File>
 			<File
@@ -216,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Entity.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SDL_Console\internal.h"
 				>
 			</File>
@@ -224,15 +232,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Player.h"
+				>
+			</File>
+			<File
 				RelativePath=".\SDL_Console\SDL_console.h"
 				>
 			</File>
 			<File
 				RelativePath=".\SdlEvents.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Sprite.h"
 				>
 			</File>
 			<File
@@ -246,6 +254,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
