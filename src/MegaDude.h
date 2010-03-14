@@ -6,6 +6,7 @@
 #include "SDL_Console\DT_Drawtext.h"
 #include "SDL_Console\SDL_Console.h"
 #include "SdlEvents.h"
+#include "Scale2X.h"
 #include "Entity.h"
 #include "Player.h"
 #include "Definitions.h"
@@ -19,6 +20,7 @@ private:
 	GameState _gameState;
 	GameKeysState _gameKeysState;
 	Player* _player;
+	Player* _testNpc;
 
 public:
 	MegaDude();

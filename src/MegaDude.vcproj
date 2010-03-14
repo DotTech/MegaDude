@@ -174,7 +174,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\DT_drawtext.c"
+				RelativePath=".\SDL_Console\DT_drawtext.c"
 				>
 			</File>
 			<File
@@ -182,7 +182,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\internal.c"
+				RelativePath=".\SDL_Console\internal.c"
 				>
 			</File>
 			<File
@@ -194,7 +194,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SDL_console.c"
+				RelativePath=".\Scale2X.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\SDL_Console\SDL_console.c"
 				>
 			</File>
 			<File
@@ -233,6 +237,10 @@
 			</File>
 			<File
 				RelativePath=".\Player.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Scale2X.h"
 				>
 			</File>
 			<File

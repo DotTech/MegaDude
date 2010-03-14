@@ -29,8 +29,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL.h>
-#include "sdl_console\DT_drawtext.h"
-#include "sdl_console\internal.h"
+#include "DT_drawtext.h"
+#include "internal.h"
 
 #ifdef HAVE_SDLIMAGE
   #include "SDL_image.h"

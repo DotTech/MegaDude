@@ -39,6 +39,15 @@ void Entity::Init()
 	entity->Animation->Flipped = false;
 
 	Entity::EntityList.push_back(entity);
+
+	// Test NPC
+	entity = new Entity;
+	entity->SetAnimation(SPRITES_MEGAMAN_IDLE, true);
+	entity->Width = 35;
+	entity->Height = 46;
+	entity->Animation->Flipped = false;
+
+	Entity::EntityList.push_back(entity);
 }
 
 // Set another sprite animation sequence (eg SPRITES_MEGAMAN_WALK or SPRITES_MEGAMAN_JUMP)

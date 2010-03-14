@@ -11,6 +11,10 @@
 
 #include <SDL.h>
 
+#define RESOLUTION_WIDTH	320
+#define RESOLUTION_HEIGHT	240
+#define SCALE2X				false
+
 #define SPRITES_SHEET_WIDTH				1076	// Width of spritesheet
 #define SPRITES_SHEET_HEIGHT			930		// Height of spritesheet
 #define SPRITES_FRAMERATE				75		// Default animation speed
@@ -28,7 +32,8 @@
 #define JUMP_ACCELERATION	10		// Acceleration when jumping
 #define JUMP_MAXHEIGHT		60		// Maximum height of a jump
 #define JUMP_SPEED			50		// Movement speed while jumping
-#define TEMP_GROUND_Y		300
+
+#define TEMP_GROUND_Y		184
 
 #define DATAFILE_TITLESCREEN "d:\\Data\\MegaDude\\src\\data\\titlescreen.bmp"
 #define DATAFILE_SPRITESHEET "d:\\Data\\MegaDude\\src\\data\\sprites.bmp"
@@ -57,6 +62,7 @@ typedef struct GameKeysState
 typedef struct Surfaces
 {
 	SDL_Surface* Display;
+	SDL_Surface* DisplayBuffer;
 	SDL_Surface* Sprites;
 	SDL_Surface* Tiles;
 	SDL_Surface* TitleScreen;
