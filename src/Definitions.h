@@ -25,6 +25,11 @@
 #define SPRITES_MEGAMAN_JUMP_HANG		3		// Megaman jumping hanging/falling
 #define SPRITES_MEGAMAN_JUMP_TOUCHDOWN	4		// Megaman jumping touching down
 
+#define JUMP_ACCELERATION	10		// Acceleration when jumping
+#define JUMP_MAXHEIGHT		60		// Maximum height of a jump
+#define JUMP_SPEED			50		// Movement speed while jumping
+#define TEMP_GROUND_Y		300
+
 #define DATAFILE_TITLESCREEN "d:\\Data\\MegaDude\\src\\data\\titlescreen.bmp"
 #define DATAFILE_SPRITESHEET "d:\\Data\\MegaDude\\src\\data\\sprites.bmp"
 #define DATAFILE_CONSOLEFONT "d:\\Data\\MegaDude\\src\\data\\ConsoleFont.bmp"

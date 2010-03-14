@@ -8,7 +8,6 @@
 
 #include "MegaDude.h"
 
-
 // Application entrance point
 int main(int argc, char* argv[]) 
 {
@@ -94,6 +93,10 @@ bool MegaDude::Init()
 	rect.w = 1024; rect.h = 768;
 	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xFF, 0xFF, 0xFF));
 	
+	rect.x = 0; rect.y = 346;
+	rect.w = 1024; rect.h = 10;
+	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xCC, 0x00, 0x00));
+
 	// Load spritesheet to surface and setup transparancy
 	loadingSurface = SDL_LoadBMP(DATAFILE_SPRITESHEET);
 	_surfaces.Sprites = SDL_DisplayFormat(loadingSurface);
@@ -111,7 +114,7 @@ bool MegaDude::Init()
 	_player = new Player();
 	_player->Entity = Entity::EntityList[SPRITES_MEGAMAN];
 	_player->Entity->SetAnimation(SPRITES_MEGAMAN_IDLE, true);
-	_player->Entity->Y = 300;
+	_player->Entity->Y = TEMP_GROUND_Y;
 
 	// Free up temporary surface
 	SDL_FreeSurface(loadingSurface);
@@ -143,7 +146,8 @@ void MegaDude::HandleGameKeys()
 	}
 	else 
 	{ 
-		_player->Jumping = false; 
+		_player->JumpingState = Player::Falling;
+		//_player->Jumping = false; 
 	}
 }
 
@@ -155,44 +159,7 @@ void MegaDude::Calculate()
 	_player->Entity->Animation->DoAnimation();
 
 	// Handle player movement
-	if (_player->Entity->LastMovementTick == 0 ||  SDL_GetTicks() - _player->Entity->LastMovementTick >= (unsigned int)_player->Entity->MovementRate)
-	{
-		// Player is walking.
-		// Move into the right direction and set the correct animation sequence.
-		if (_player->Walking)
-		{
-			// If we are not jumping and walking animation has not been set yet, set the walking animation
-			if (!_player->Jumping && _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_WALK)
-				_player->Entity->SetAnimation(SPRITES_MEGAMAN_WALK, true);
-
-			if (_player->GetDirection())
-				_player->Entity->X--;
-			else
-				_player->Entity->X++;
-		}
-		
-		// Player is jumping
-		if (_player->Jumping)
-		{
-			// If we just entered the jumping state, we need to reset the currentframe to 0
-			if (_player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_UP 
-				&& _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_HANG 
-				&& _player->Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_TOUCHDOWN)
-			{
-				_player->Entity->SetAnimation(SPRITES_MEGAMAN_JUMP_UP, true);
-			}
-		}
-
-		// Player is idle, let it blink with its eyes
-		if (!_player->Walking && !_player->Jumping)
-		{
-			if (_player->Entity->CurrentAnimation != SPRITES_MEGAMAN_IDLE)
-				_player->Entity->SetAnimation(SPRITES_MEGAMAN_IDLE, true);	
-		}
-
-		// Remember when we moved
-		_player->Entity->LastMovementTick = SDL_GetTicks();
-	}
+	_player->Move();
 }
 
 // Handles all the rendering of anything that shows up on the screen. 
