@@ -8,10 +8,26 @@
 
 #include "MegaDude.h"
 
-// pointer to the line in VRAM to start blitting to when stretchblitting.
-// this may not be the first line on the display as it is adjusted to
-// center the image on the screen when in fullscreen.
-unsigned char *VRAMPtr;
+
+// 20 x 15 tiles
+int testLevel[15][20] = {
+					{ 0, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 1, 3},
+					{ 8, 9, 9,10, 9,12, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 4},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,45,45,45,45,45,45,45,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,17,18,19,18,16,18,19,45,45,45,45,45,45, 6},
+					{ 7,45,45,45,45,13,21,22,23,22,20,22,23,45,45,45,45,45,45, 6},
+					{ 1, 1, 2, 1, 1, 3,24,25,26,27,27,28,29,30, 0, 1, 1, 2, 1, 1},
+					};
+
 
 // Application entrance point
 int main(int argc, char* argv[]) 
@@ -33,6 +49,7 @@ MegaDude::MegaDude(void)
 	_gameKeysState.RightKeyDown = false;
 	_gameKeysState.ShootKeyDown = false;
 	_gameKeysState.JumpKeyDown = false;
+	_gameKeysState.ConsoleKeyDown = false;
 
 	_gameRunning = true;
 	_gameState = PlayingLevel;
@@ -108,24 +125,49 @@ bool MegaDude::Init()
 	SDL_Rect rect;
 	rect.x = 0; rect.y = 0;
 	rect.w = 1024; rect.h = 768;
-	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xFF, 0xFF, 0xFF));
+	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xC0, 0xD8, 0xD8));
 	
-	rect.x = 0; rect.y = TEMP_GROUND_Y + 46;
-	rect.w = 1024; rect.h = 10;
-	SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xCC, 0x00, 0x00));
+	// Draw temporary floor
+	//rect.x = 0; rect.y = TEMP_GROUND_Y + 46;
+	//rect.w = 1024; rect.h = 10;
+	//SDL_FillRect(_surfaces.TitleScreen, &rect, SDL_MapRGB(_surfaces.TitleScreen->format, 0xCC, 0x00, 0x00));
 
 	// Load spritesheet to surface and setup transparancy
 	loadingSurface = SDL_LoadBMP(DATAFILE_SPRITESHEET);
 	_surfaces.Sprites = SDL_DisplayFormat(loadingSurface);
 	SDL_SetColorKey(_surfaces.Sprites, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(_surfaces.Sprites->format, SPRITES_TRANSPARANCY_R, SPRITES_TRANSPARANCY_G, SPRITES_TRANSPARANCY_B));
 
-
+	// Initialize sprites
 	SpriteAnimation::InitAnimations();
+
+	// Initialize tiles
+	Tile::Init();
 
 	// Initialize sprite data
 	// This loads the definition of animation frames and their location on the spritesheet
 	Entity::Init();
-	
+
+
+	// TEST TILE DRAWING
+	// Draw tiles
+	for (int y=0; y<15; y++)
+	{
+		for (int x=0; x<20; x++)
+		{
+			int tileNumber = testLevel[y][x];
+			if (tileNumber != -1)
+			{
+				SDL_Rect dst;
+				dst.x = 16 * x;
+				dst.y = 16 * y;
+				dst.w = TILES_WIDTH;
+				dst.h = TILES_HEIGHT;
+				
+				SDL_BlitSurface(_surfaces.Sprites, &Tile::TileList[tileNumber]->TileRect, _surfaces.TitleScreen, &dst);
+			}
+		}
+	}
+
 	// Create player entity
 	// TODO: Move entity creation to other class
 	_player = new Player();
@@ -144,7 +186,9 @@ bool MegaDude::Init()
 	SDL_FreeSurface(loadingSurface);
 
 	// Initialize console
-	_console = CON_Init(DATAFILE_CONSOLEFONT, _surfaces.DisplayBuffer, 100, *new SDL_Rect);
+	CON_Init(DATAFILE_CONSOLEFONT, _surfaces.DisplayBuffer, 100, *new SDL_Rect);
+	_console.Enabled = false;
+	_console.LastTick = 0;
 
 	return true;
 }
@@ -171,7 +215,16 @@ void MegaDude::HandleGameKeys()
 	else 
 	{ 
 		_player->JumpingState = Player::Falling;
-		//_player->Jumping = false; 
+	}
+
+	// Hide or show the console
+	if (_gameKeysState.ConsoleKeyDown)
+	{
+		if (_console.LastTick == 0 || SDL_GetTicks() - _console.LastTick > 250)
+		{
+			_console.Enabled = !_console.Enabled;
+			_console.LastTick = SDL_GetTicks();
+		}
 	}
 }
 
@@ -185,9 +238,7 @@ void MegaDude::Calculate()
 	// Handle player movement
 	_player->Move();
 
-
 	_testNpc->Entity->Animation->DoAnimation();
-
 }
 
 // Handles all the rendering of anything that shows up on the screen. 
@@ -199,8 +250,11 @@ void MegaDude::Render()
 	rectDest.x = 0;
 	rectDest.y = 0;
 
+	// Draw background
+	// SDL_BlitSurface(_surfaces.TitleScreen, NULL, _surfaces.DisplayBuffer, &rectDest);
+
 	SDL_BlitSurface(_surfaces.TitleScreen, NULL, _surfaces.DisplayBuffer, &rectDest);
-	
+
 	// Draw the player sprite
 	SDL_BlitSurface(_surfaces.Sprites, &_player->Entity->Animation->GetCurrentFrame(), _surfaces.DisplayBuffer, &_player->Entity->FrameDestRect());
 
@@ -208,38 +262,47 @@ void MegaDude::Render()
 	SDL_BlitSurface(_surfaces.Sprites, &_testNpc->Entity->Animation->GetCurrentFrame(), _surfaces.DisplayBuffer, &_testNpc->Entity->FrameDestRect());
 
 	// Render console
-	SDL_Rect border;
-	border.x = 723; border.y = 467;
-	border.w = 300; border.h = 300;
-
-	SDL_FillRect(_surfaces.DisplayBuffer, &border, 0);
-	CON_DrawConsole(_console);
-
-	char spriteX[80];
-	sprintf_s(spriteX, "x:%d fr:%d cf:%d", _player->Entity->X, _player->Entity->Animation->FrameRate, _player->Entity->Animation->CurrentFrame);
-
-	DT_DrawText("Debug console", _surfaces.DisplayBuffer, 0, 740, 480);
-	DT_DrawText(spriteX, _surfaces.DisplayBuffer, 0, 740, 500);
-
-	// Debug: display key strokes
-	if (_gameKeysState.LeftKeyDown) DT_DrawText("LEFT", _surfaces.DisplayBuffer, 0, 740, 520);
-	if (_gameKeysState.RightKeyDown) DT_DrawText("RIGHT", _surfaces.DisplayBuffer, 0, 780, 520);
-	if (_player->Walking) DT_DrawText("walking", _surfaces.DisplayBuffer, 0, 740, 540);
-	if (_gameKeysState.JumpKeyDown) DT_DrawText("JUMP", _surfaces.DisplayBuffer, 0, 820, 520);
-	if (_player->Jumping) DT_DrawText("jumping", _surfaces.DisplayBuffer, 0, 820, 540);
-
-	// Blit a scaled version of the displaybuffer to the display surface
+	if (_console.Enabled)
+		DrawConsole();
+	
 	if (SCALE2X)
-	{
+		// Blit a scaled version of the displaybuffer to the display surface
 		Scale2X::Scale(_surfaces.DisplayBuffer, _surfaces.Display);
-	}
 	else
-	{
+		// Blit unscaled displayBuffer to the display
 		SDL_BlitSurface(_surfaces.DisplayBuffer, NULL, _surfaces.Display, NULL);
-	}
 
 	// Flip the display surface
 	SDL_Flip(_surfaces.Display);
+}
+
+// Draw the console
+void MegaDude::DrawConsole()
+{
+	SDL_Rect rect;
+	rect.x = 0; rect.y = 0;
+	rect.w = RESOLUTION_WIDTH; rect.h = 70;
+	SDL_FillRect(_surfaces.DisplayBuffer, &rect, 0);
+
+	char spriteX[80];
+	char spriteY[10];
+	sprintf_s(spriteX, "x:%d fr:%d cf:%d", _player->Entity->X, _player->Entity->Animation->FrameRate, _player->Entity->Animation->CurrentFrame);
+	sprintf_s(spriteY, "y:%d", _player->Entity->Y);
+
+	DT_DrawText("Debug console", _surfaces.DisplayBuffer, 0, 10, 10);
+	DT_DrawText(spriteX, _surfaces.DisplayBuffer, 0, 190, 10);
+	DT_DrawText(spriteY, _surfaces.DisplayBuffer, 0, 190, 30);
+
+	char tiles[80];
+	sprintf_s(tiles, "T:%d", Tile::TileList.size());
+	DT_DrawText(tiles, _surfaces.DisplayBuffer, 0, 190, 50);
+
+	// Debug: display key strokes
+	if (_gameKeysState.LeftKeyDown) DT_DrawText("LEFT", _surfaces.DisplayBuffer, 0, 10, 30);
+	if (_gameKeysState.RightKeyDown) DT_DrawText("RIGHT", _surfaces.DisplayBuffer, 0, 50, 30);
+	if (_player->Walking) DT_DrawText("walking", _surfaces.DisplayBuffer, 0, 10, 50);
+	if (_gameKeysState.JumpKeyDown) DT_DrawText("JUMP", _surfaces.DisplayBuffer, 0, 90, 30);
+	if (_player->Jumping) DT_DrawText("jumping", _surfaces.DisplayBuffer, 0, 90, 50);
 }
 
 // Cleans up any resources loaded, and insures a peaceful quitting of the game.
@@ -276,15 +339,9 @@ void MegaDude::OnKeyDown(SDLKey sym, SDLMod mod, Uint16 unicode)
 		_gameKeysState.RightKeyDown = true;
 	}
 	
-	if (sym == SDLK_LCTRL)
-	{
-		_gameKeysState.JumpKeyDown = true;
-	}
-
-	if (sym == SDLK_ESCAPE)
-	{
-		OnExit();
-	}
+	if (sym == SDLK_LCTRL) _gameKeysState.JumpKeyDown = true;
+	if (sym == SDLK_TAB) _gameKeysState.ConsoleKeyDown = true;
+	if (sym == SDLK_ESCAPE) OnExit();
 }
 
 // A key was released
@@ -293,6 +350,7 @@ void MegaDude::OnKeyUp(SDLKey sym, SDLMod mod, Uint16 unicode)
 	if (sym == SDLK_LEFT) _gameKeysState.LeftKeyDown = false;
 	if (sym == SDLK_RIGHT) _gameKeysState.RightKeyDown = false;
 	if (sym == SDLK_LCTRL) _gameKeysState.JumpKeyDown = false;
+	if (sym == SDLK_TAB) _gameKeysState.ConsoleKeyDown = false;
 }
 
 // Escape pressed or window closed

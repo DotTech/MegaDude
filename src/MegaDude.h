@@ -8,6 +8,7 @@
 #include "SdlEvents.h"
 #include "Scale2X.h"
 #include "Entity.h"
+#include "Tile.h"
 #include "Player.h"
 #include "Definitions.h"
 
@@ -15,7 +16,7 @@ class MegaDude : public SdlEvents
 {
 private:
 	bool _gameRunning;
-	ConsoleInformation* _console;
+	ConsoleState _console;
 	Surfaces _surfaces;
 	GameState _gameState;
 	GameKeysState _gameKeysState;
@@ -31,6 +32,7 @@ private:
     void HandleGameKeys();
 	void Calculate();
     void Render();
+	void DrawConsole();
     void Cleanup();	
 	
 	// GameEvents member implementations

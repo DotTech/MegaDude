@@ -101,7 +101,10 @@ void Player::Jump()
 		{
 			// Change the animation when we fall down
 			if (Entity->CurrentAnimation != SPRITES_MEGAMAN_JUMP_HANG)
+			{
 				Entity->SetAnimation(SPRITES_MEGAMAN_JUMP_HANG, true);
+				_jumpAcceleration = 1;
+			}
 
 			Entity->Y += _jumpAcceleration;
 		}

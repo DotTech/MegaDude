@@ -13,7 +13,7 @@
 
 #define RESOLUTION_WIDTH	320
 #define RESOLUTION_HEIGHT	240
-#define SCALE2X				false
+#define SCALE2X				true
 
 #define SPRITES_SHEET_WIDTH				1076	// Width of spritesheet
 #define SPRITES_SHEET_HEIGHT			930		// Height of spritesheet
@@ -29,17 +29,21 @@
 #define SPRITES_MEGAMAN_JUMP_HANG		3		// Megaman jumping hanging/falling
 #define SPRITES_MEGAMAN_JUMP_TOUCHDOWN	4		// Megaman jumping touching down
 
+#define TILES_WIDTH		16
+#define TILES_HEIGHT	16
+
 #define JUMP_ACCELERATION	10		// Acceleration when jumping
 #define JUMP_MAXHEIGHT		60		// Maximum height of a jump
 #define JUMP_SPEED			50		// Movement speed while jumping
 
-#define TEMP_GROUND_Y		184
+#define TEMP_GROUND_Y		178
 
 #define DATAFILE_TITLESCREEN "d:\\Data\\MegaDude\\src\\data\\titlescreen.bmp"
 #define DATAFILE_SPRITESHEET "d:\\Data\\MegaDude\\src\\data\\sprites.bmp"
 #define DATAFILE_CONSOLEFONT "d:\\Data\\MegaDude\\src\\data\\ConsoleFont.bmp"
 #define DATAFILE_ANIMATIONSDEF "d:\\Data\\MegaDude\\src\\data\\animations.txt"
 #define DATAFILE_SPRITESDEF "d:\\Data\\MegaDude\\src\\data\\sprites.txt"
+#define DATAFILE_TILESDEF "d:\\Data\\MegaDude\\src\\data\\tiles.txt"
 
 // The different game states (startup, titlescreen, playing, etc)
 enum GameState
@@ -56,6 +60,7 @@ typedef struct GameKeysState
 	bool RightKeyDown;
 	bool JumpKeyDown;
 	bool ShootKeyDown;
+	bool ConsoleKeyDown;
 } GameKeysState;
 
 // Contains SDL_Surfaces that stay in-memory during gameplay
@@ -68,11 +73,11 @@ typedef struct Surfaces
 	SDL_Surface* TitleScreen;
 } Surfaces;
 
-// Structure for the MegaDude entity (player entity)
-/*typedef struct MegaDudeObject
+// Console state structure
+typedef struct ConsoleState
 {
-	Sprite* Sprite;
-	int State;
-} MegaDudeObject;*/
+	int LastTick;
+	bool Enabled;
+} ConsoleState;
 
 #endif

@@ -209,6 +209,10 @@
 				RelativePath=".\SpriteAnimation.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Tile.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -255,6 +259,10 @@
 				RelativePath=".\SpriteAnimation.h"
 				>
 			</File>
+			<File
+				RelativePath=".\Tile.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -263,7 +271,19 @@
 			>
 		</Filter>
 		<File
+			RelativePath=".\Data\animations.txt"
+			>
+		</File>
+		<File
 			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
+		<File
+			RelativePath=".\Data\sprites.txt"
+			>
+		</File>
+		<File
+			RelativePath=".\Data\tiles.txt"
 			>
 		</File>
 	</Files>
